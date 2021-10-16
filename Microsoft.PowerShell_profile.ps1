@@ -25,14 +25,10 @@ function prompt {
      [string[]]$parsedPath = ConvertTo-NamedPath $path.Path 
      $hasAlias = ${parsedPath}?[0] -match '\[.*'
      
-     if ($hasAlias) {
-          $parsedPath[0] = " " + $parsedPath[0] + " "
-          $resultPath = ($parsedPath | Join-String -Separator '\').Substring(1) 
-     } else { 
-          $resultPath = $parsedPath | Join-String -Separator '\' 
-     }
+     if ($hasAlias) { $parsedPath[0] = " " + $parsedPath[0] + " " }
+
      $temp = Join-String -Separator '\' 
-     $resultPath = $hasAlias ? $temp.Substring(1) : $temp
+     $resultPath = $hasAlias ? $temp.Substring(1) : $temp # this method = fewer lines and guarantees that $resultPath is always defined
 
      $path.drive.root + $resultPath + "$ "
 }
