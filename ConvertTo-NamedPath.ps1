@@ -1,41 +1,41 @@
 ﻿$__namedPaths = @{
-     $HOME = '~'
-     #"$HOME/Downloads" = '⬇️'
+     $HOME = '[~]'
+}
+function decorateAlias {
+     param($alias)
+     "[$alias]"
 }
 function ConvertTo-NamedPath {
-     param
-     (
-          [string] $path
-     )
-     [string] $namedPath = ''
+     param ( [string] $path)
+     $pathList = [System.Collections.ArrayList]@()
+     $p = [System.Collections.ArrayList]$path.split('\', [System.StringSplitOptions]::RemoveEmptyEntries)
 
-     $p = $path.split('\', [System.StringSplitOptions]::RemoveEmptyEntries)
-     foreach ($i in ($p.length - 1)..0) {
+     $drive = $p[0]
+     $p.RemoveAt(0) | Out-Null
+     foreach ($i in ($p.count - 1)..0) {
+          if ($i -lt 0) { break } # edge case when array is empty
           $item = $p[$i]
-          $itemPath = ($p[0..$i] | Join-String -Separator \)   
+          $itemPath = ($drive, $p[0..$i] | Join-String -Separator \)   
 
           $alias = $__namedPaths[$itemPath]
           if ($null -eq $alias) {
-               # search if this can be aliased
-               $isAliasable = (Test-Path ($itemPath  + "\" + ".git"))
-
-               <# 6 lines vs 2 with trenary operator
-               if($isAliasable){
-                    $__namedPaths[$i] = $itemPath 
-                    $alias =  $item
-               }else {
-                    $__namedPaths[$i] = $false
-               }
-               #>
-
-               $__namedPaths[$i] = $isAliasable ? $itemPath : $False
-               $alias = $isAliasable ?  $item : $null 
-
+               $shouldAlias = (Test-Path ($itemPath + "\" + ".git"))
+               $alias = $shouldAlias ? (Add-NamedPath $itemPath $item -PassThru) : $alias
           } 
-          <#Coalescing operator: 3 lines vs 1 and provides an unique line of logic for messing with __NamedPaths#>
-       
-          $namedPath = $namedPath.Insert(0, $alias ?? $item)
-          if($alias || $isAliasable){break}
+          $pathList.Insert(0, $alias ?? $item)
+          if ($alias) { break }
      }
-     $namedPath  # return == Write-Output , but exits the function!
+     $pathList
+}
+
+
+# add passthru
+function Add-NamedPath {
+     param (
+          $path, $name, [switch]$PassThru
+     )
+     if ('/' -in $path.Split()) { Write-Error "Paths must be separated by '\'!, instead got $path" }
+     $alias = decorateAlias $name
+     $__namedPaths[$path] = $alias 
+     if ($PassThru) { $alias }
 }
