@@ -1,4 +1,4 @@
-function Set-WindowStyle {
+function Set-WinWindowStyle {
 param(
     [Parameter()]
     [ValidateSet('FORCEMINIMIZE', 'HIDE', 'MAXIMIZE', 'MINIMIZE', 'RESTORE', 
@@ -27,3 +27,13 @@ param(
     $Win32ShowWindowAsync::ShowWindowAsync($MainWindowHandle, $WindowStates[$Style]) | Out-Null
 }
 
+
+function ReadlineWindowHandler{
+    param(
+        $style = 'MAXIMIZE'
+    )
+    Get-Process | Where-Object {$_.ProcessName -like $name -and $_.MainWindowHandle.ToInt32()} |
+     ForEach-Object {Set-WindowStyle $_.MainWindowHandle -Style $style}
+}
+
+#ps | ? {$_.MainWindowTitle -like "*Evernote*"} | % {Set-WindowStyle $_.MainWindowHandle -Style MAXIMIZE }
