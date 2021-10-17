@@ -25,12 +25,9 @@ function prompt {
      [string[]]$parsedPath = ConvertTo-NamedPath $path.Path 
      $hasAlias = ${parsedPath}?[0] -match '\[.*'
      
-     if ($hasAlias) { $parsedPath[0] = " " + $parsedPath[0] + " " }
-
-     $temp = Join-String -Separator '\' 
-     $resultPath = $hasAlias ? $temp.Substring(1) : $temp # this method = fewer lines and guarantees that $resultPath is always defined
-
-     $path.drive.root + $resultPath + "$ "
+     if ($hasAlias) { $parsedPath[0] = $parsedPath[0] + " " }
+     $temp = $parsedPath | Join-String -Separator '\' 
+     $resultPath = $hasAlias ? $temp.Replace('] \', '] ') : $temp 
+     $path.drive.name + " " + $resultPath + "$ "                                           # use drive.name instead of root because Providers always have name but may not have a root
 }
 
-#Remove-Variable -Name quickblock
