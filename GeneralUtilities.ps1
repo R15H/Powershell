@@ -32,7 +32,8 @@ function  Convert-PDFToCsvFile {
     
     $fname = Split-Path $Path -LeafBase
     $outfile = "$DestinationFolder/$fname"
-    py -c "import tabula; tabula.convert_into(r'$($Path.replace('\','/'))',r'$($outfile.replace('\','/'))', output_format = 'csv', pages='all')"   
+    # path \ replaced with / !
+    py -c "import tabula; tabula.convert_into(r'$($Path.replace('\','/'))',r'$($outfile.replace('\','/'))', output_format = 'csv', pages='all')"    # r strings to not escape chars with \ (hence having an 'can't decode error)
     $outfile
 }
 
@@ -45,8 +46,8 @@ function Convert-FileToCsv {
     $cache = Join-Path $tempPath "$fileName.cachy"
     $csvObjects = [System.Collections.ArrayList]::new()
 
-    $hasCachedConversion = ((Test-Path $cache) -and ( (Get-Item $cache).lastWriteTime -gt (Get-Item $src).lastWriteTime))
-    if ( (-not $hasCachedConversion) -or $NoCache) {
+    $hasCache = ((Test-Path $cache) -and ( (Get-Item $cache).lastWriteTime -gt (Get-Item $src).lastWriteTime))
+    if ( (-not $hasCache) -or $NoCache) {
         $extension = Split-Path $src -Extension 
         switch ($extension) {
             '.pdf' { 
@@ -85,12 +86,7 @@ function Convert-FileToCsv {
         if ($MergeEnd) {
             $MergeStart ??= 0
 
-            write-host "$($finalContent[0])"
-            write-host "$($finalContent[1])"
-            write-host "$($finalContent[2])"
-            write-host "$($finalContent[3])"
             $mergedRow = [System.Collections.ArrayList]$finalContent[$MergeStart].split(',')
-            write-host "MergedRow before: $($mergedRow -join ',')"
             foreach ($row in $finalContent[($MergeStart + 1)..$MergeEnd]) {
                 $i = 0
                 write-host $row
@@ -105,13 +101,10 @@ function Convert-FileToCsv {
             }
             $content[$MergeEnd] = $mergedRow.trim() -join ',' #trim is important to access properties conveniently
             $finalContent = $content[$MergeEnd..$content.Length] 
-            write-host "MergedRow after: $($mergedRow -join ',')"
         }
         if ($First) {
             $finalContent | Select-Object -First $First | write-host 
         }
-
-
 
         set-content $finalFile -Value $finalContent 
         #set-content -Path $finalCSVFile -Value $finalCSVValue 
