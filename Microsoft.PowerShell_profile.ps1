@@ -1,4 +1,13 @@
 Set-PSReadLineOption -EditMode Emacs
+
+set-alias wc measure
+set-alias vim nvim
+function touch {
+     param($path)
+     $path | ForEach-Object { set-content -Path  $_ -Value ''}
+}
+
+$_emptyLine = "\r\n\r\n"
 #Import-Module -Name Terminal-Icons
 write-host Welcome back, what are your commands?
 
@@ -18,8 +27,8 @@ Set-PSReadLineKeyHandler -Chord '%' -ScriptBlock { Invoke-Command $__quickblock 
 
 Import-Module "$($profile | split-path -Parent)\ConvertTo-NamedPath.ps1" # Import-Module > . (source operator) --> variables inside the script are only accessable by the functions inside it!
 
-#Add-NamedPath "$HOME\Downloads" '⬇️'
-#Add-NamedPath "$HOME\Documents" '📜'
+Add-NamedPath "$HOME\Downloads" '⬇️'
+Add-NamedPath "$HOME\Documents" '📜'
 function prompt {
      $path = (Get-Location)
      [string[]]$parsedPath = ConvertTo-NamedPath $path.Path 

@@ -14,7 +14,7 @@ param(
         RESTORE         = 9;  SHOW            = 5
         SHOWDEFAULT     = 10; SHOWMAXIMIZED   = 3
         SHOWMINIMIZED   = 2;  SHOWMINNOACTIVE = 7
-        SHOWNA          = 8;  SHOWNOACTIVATE  = 4
+SHOWNA          = 8;  SHOWNOACTIVATE  = 4
         SHOWNORMAL      = 1
     }
     Write-Verbose ("Set Window Style {1} on handle {0}" -f $MainWindowHandle, $($WindowStates[$style]))
@@ -32,6 +32,12 @@ function ReadlineWindowHandler{
     param(
         $style = 'MAXIMIZE'
     )
+    # [PSConsoleReadLine]::ReadLine()
+    # alt 0 -> Code Editor (Search for Intelij/VS Code)
+    # alt 1 -> 
+    # alt 2 ->
+    # alt 8 -> Notes (Evernote/OneNote/Notepad/StickyNotes)
+
     Get-Process | Where-Object {$_.ProcessName -like $name -and $_.MainWindowHandle.ToInt32()} |
      ForEach-Object {Set-WindowStyle $_.MainWindowHandle -Style $style}
 }

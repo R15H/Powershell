@@ -1,0 +1,165 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">PSOneTools</S>
+      <Version N="Version">2.4</Version>
+      <S N="Type">Module</S>
+      <S N="Description">commands taken from articles published at https://powershell.one</S>
+      <S N="Author">Dr. Tobias Weltner</S>
+      <S N="CompanyName">ISESteroids</S>
+      <S N="Copyright">2020 - MIT License</S>
+      <DT N="PublishedDate">2020-04-23T08:34:45+01:00</DT>
+      <Obj N="InstalledDate" RefId="1">
+        <DT>2021-10-28T10:32:44.1209616+01:00</DT>
+        <MS>
+          <Obj N="DisplayHint" RefId="2">
+            <TN RefId="1">
+              <T>Microsoft.PowerShell.Commands.DisplayHintType</T>
+              <T>System.Enum</T>
+              <T>System.ValueType</T>
+              <T>System.Object</T>
+            </TN>
+            <ToString>DateTime</ToString>
+            <I32>2</I32>
+          </Obj>
+        </MS>
+      </Obj>
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">https://en.wikipedia.org/wiki/MIT_License</URI>
+      <URI N="ProjectUri">https://github.com/TobiasPSP/Modules.PSOneTools/tree/master/PSOneTools</URI>
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="3">
+        <TN RefId="2">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="4">
+        <TN RefId="3">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Assert-PsOneFolderExists</S>
+                <S>Start-PSOneClipboardListener</S>
+                <S>Stop-PSOneClipboardListener</S>
+                <S>Get-PSOneClipboardListenerStatus</S>
+                <S>Show-PSOneApplicationWindow</S>
+                <S>Find-PSOneDuplicateFile</S>
+                <S>Test-PSOnePort</S>
+                <S>Test-PSOnePing</S>
+                <S>Foreach-ObjectFast</S>
+                <S>Where-ObjectFast</S>
+                <S>Test-PSOneScript</S>
+                <S>Get-PSOneToken</S>
+                <S>Expand-PSOneToken</S>
+                <S>Get-PSOneDirectory</S>
+                <S>Group-ObjectFast</S>
+                <S>Find-PSOneDuplicateFileFast</S>
+                <S>Get-PsOneFileHash</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="2" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Workflow</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="7">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Assert-PsOneFolderExists</S>
+                <S>Start-PSOneClipboardListener</S>
+                <S>Stop-PSOneClipboardListener</S>
+                <S>Get-PSOneClipboardListenerStatus</S>
+                <S>Show-PSOneApplicationWindow</S>
+                <S>Find-PSOneDuplicateFile</S>
+                <S>Test-PSOnePort</S>
+                <S>Test-PSOnePing</S>
+                <S>Foreach-ObjectFast</S>
+                <S>Where-ObjectFast</S>
+                <S>Test-PSOneScript</S>
+                <S>Get-PSOneToken</S>
+                <S>Expand-PSOneToken</S>
+                <S>Get-PSOneDirectory</S>
+                <S>Group-ObjectFast</S>
+                <S>Find-PSOneDuplicateFileFast</S>
+                <S>Get-PsOneFileHash</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <S N="ReleaseNotes">Added Assert-PsoFolderExists</S>
+      <Obj N="Dependencies" RefId="8">
+        <TNRef RefId="2" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="9">
+        <TN RefId="4">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">2020 - MIT License</S>
+          <S N="description">commands taken from articles published at https://powershell.one</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="releaseNotes">Added Assert-PsoFolderExists</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">1659</S>
+          <S N="downloadCount">2275</S>
+          <S N="packageSize">38416</S>
+          <S N="published">23/04/2020 08:34:45 +01:00</S>
+          <S N="created">23/04/2020 08:34:45 +01:00</S>
+          <S N="lastUpdated">28/10/2021 05:29:32 +01:00</S>
+          <S N="tags">PSModule PSFunction_Assert-PsOneFolderExists PSCommand_Assert-PsOneFolderExists PSFunction_Start-PSOneClipboardListener PSCommand_Start-PSOneClipboardListener PSFunction_Stop-PSOneClipboardListener PSCommand_Stop-PSOneClipboardListener PSFunction_Get-PSOneClipboardListenerStatus PSCommand_Get-PSOneClipboardListenerStatus PSFunction_Show-PSOneApplicationWindow PSCommand_Show-PSOneApplicationWindow PSFunction_Find-PSOneDuplicateFile PSCommand_Find-PSOneDuplicateFile PSFunction_Test-PSOnePort PSCommand_Test-PSOnePort PSFunction_Test-PSOnePing PSCommand_Test-PSOnePing PSFunction_Foreach-ObjectFast PSCommand_Foreach-ObjectFast PSFunction_Where-ObjectFast PSCommand_Where-ObjectFast PSFunction_Test-PSOneScript PSCommand_Test-PSOneScript PSFunction_Get-PSOneToken PSCommand_Get-PSOneToken PSFunction_Expand-PSOneToken PSCommand_Expand-PSOneToken PSFunction_Get-PSOneDirectory PSCommand_Get-PSOneDirectory PSFunction_Group-ObjectFast PSCommand_Group-ObjectFast PSFunction_Find-PSOneDuplicateFileFast PSCommand_Find-PSOneDuplicateFileFast PSFunction_Get-PsOneFileHash PSCommand_Get-PsOneFileHash PSIncludes_Function</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2021-10-28T05:29:32Z</S>
+          <S N="NormalizedVersion">2.4.0</S>
+          <S N="Authors">Dr. Tobias Weltner</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">PSOneTools.nuspec|Assert-PsOneFolderExists.ps1|Expand-PSOneToken.ps1|Find-PSOneDuplicateFile.ps1|Find-PSOneDuplicateFileFast.ps1|Foreach-ObjectFast.ps1|Get-PSOneClipboardListenerStatus.ps1|Get-PSOneDirectory.ps1|Get-PSOneFileHash.ps1|Get-PSOneToken.ps1|Group-ObjectFast.ps1|init.ps1|module.psm1|PSOneTools.psd1|Show-PSOneApplicationWindow.ps1|Start-PSOneClipboardListener.ps1|Stop-PSOneClipboardListener.ps1|Test-PSOnePing.ps1|Test-PSOnePort.ps1|Test-PSOneScript.ps1|Where-ObjectFast.ps1|Internal\Install-LongPathSupport.ps1</S>
+          <S N="GUID">54948ec2-33c5-4009-88b0-9446fa2516e5</S>
+          <S N="CompanyName">powershell.one</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">C:\Users\Tester\Documents\PowerShell\Modules\PSOneTools\2.4</S>
+    </MS>
+  </Obj>
+</Objs>
