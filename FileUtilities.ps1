@@ -7,21 +7,20 @@ function Convert-ExcelToCsvFile {
     $Path = Resolve-Path $Path
     $DestinationFolder = $DestinationFolder ? (Resolve-Path $DestinationFolder) : (New-TemporaryFile)
 
-    $csvFiles = [System.Collections.ArrayList]::new()
     $Excel = New-Object -ComObject Excel.Application 
     $Excel.DisplayAlerts = $false # remove prompts to substitute file
     $book = $Excel.Workbooks.Open($Path)
     $i = 0
     write-host "Reading sheets:" -NoNewLine
     foreach ($sheet in $book.Worksheets) {
-        $savePath = Join-Path $DestinationFolder  "${split-path $path -LeafBase}$i.csv"
-        write-host " $0" -NoNewLine
-        $csvFiles.add($savePath)
+        $savePath = Join-Path $DestinationFolder  "$(split-path $Path -LeafBase)$i.csv"
+        # ${VARIABLE WITH A WEIRD NAME AND SPACES} 
+        $file = [PSCustomObject]::new($savePath)
+        $file | Add-Member -NotePropertyName 'SheetName' -NotePropertyValue $sheet.name
         $sheet.saveAs($savePath, 6) # 6 to save as csv
-        $i += 1
+        $file; $i += 1
     }
     $Excel.Quit() | Out-Null 
-    $csvFiles
 }
 
 function  Convert-PDFToCsvFile {
@@ -39,12 +38,16 @@ function  Convert-PDFToCsvFile {
 
 function Convert-FileToCsv {
     [CmdletBinding()]
-    param([string]$Path, [int]$First, [int]$TrimFirst, [switch]$Supress, [int]$MergeEnd, [switch]$NoCache)
+    param(
+        [string]$Path, 
+        [int]$First, [switch]$Supress,
+        [int]$TrimFirst, [int]$MergeEnd,$NameRow,  # name row = (rowNr,name),(rowNr,name)
+        [switch]$NoCache
+    )
     $src = Resolve-Path $Path 
     $fileName = Split-Path $Path -LeafBase
     $tempPath = [System.io.Path]::GetTempPath()
-    $cache = Join-Path $tempPath "$fileName.cachy"
-    $csvObjects = [System.Collections.ArrayList]::new()
+    $cache = Join-Path $tempPath "$fileName.cachu"
 
     $hasCache = ((Test-Path $cache) -and ( (Get-Item $cache).lastWriteTime -gt (Get-Item $src).lastWriteTime))
     if ( (-not $hasCache) -or $NoCache) {
@@ -61,12 +64,13 @@ function Convert-FileToCsv {
             }
         }
         $csvFiles | Export-Clixml -Path $cache  
+
     }
     else {
         $csvFiles = Import-CliXml -Path $cache
     }
 
-
+    # each of this files corresponds to a sheet of the original excel/pdf
     foreach ($file in $csvFiles) {
         $content = Get-Content $file
         $finalContent = $content
@@ -89,11 +93,11 @@ function Convert-FileToCsv {
             $mergedRow = [System.Collections.ArrayList]$finalContent[$MergeStart].split(',')
             foreach ($row in $finalContent[($MergeStart + 1)..$MergeEnd]) {
                 $i = 0
-                write-host $row
                 foreach ($value in $row.split(',')) {
-                    if ($mergedRow.count -lt ($i+1)) {
+                    if ($mergedRow.count -lt ($i + 1)) {
                         $mergedRow.add(" $value")
-                    } else {
+                    }
+                    else {
                         $mergedRow[$i] += " $value"
                     }
                     $i += 1
@@ -108,13 +112,18 @@ function Convert-FileToCsv {
 
         set-content $finalFile -Value $finalContent 
         #set-content -Path $finalCSVFile -Value $finalCSVValue 
-        $csvObj = Import-CSV $finalFile
-        #$csvObj | Add-Member -NotePropertyName 'FromOriginalFile' -NotePropertyValue $file 
-        #$csvObj | Add-Member -NotePropertyName 'FromFile' -NotePropertyValue $finalCSVFile
-        $csvObjects.add($csvObj) | Out-Null
-    }
-    if (-not $supress -and (-not $First)) {
-        $csvObjects
+        $csvObj = Import-CSV $finalFile -WarningAction SilentlyContinue
+
+
+
+        # each row must be outputed one a the time for the command to work with the "pipeline arquitecture"
+        $csvObj | ForEach-Object { 
+            $row = $_
+            $row | Add-Member -NotePropertyName 'SheetName' -NotePropertyValue $file.SheetName # add-member does not return the object
+            if (-not $supress -and (-not $First)) {
+                $row
+            }
+        }
     }
 }
 

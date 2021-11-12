@@ -1,19 +1,19 @@
+$ProfileFolder = Split-Path $PROFILE -Parent
+. "$ProfileFolder/PersonalScripts/aliases.ps1"
+. "$ProfileFolder/FileUtilities.ps1"
+
+Import-Module "$ProfileFolder\ConvertTo-NamedPath.ps1" 
+
+
 Set-PSReadLineOption -EditMode Emacs
 
-set-alias wc measure
-set-alias vim nvim
-function touch {
-     param($path)
-     $path | ForEach-Object { set-content -Path  $_ -Value ''}
-}
 
 $_emptyLine = "\r\n\r\n"
-#Import-Module -Name Terminal-Icons
+
 write-host Welcome back, what are your commands?
 
 $__quickblock = {
      param($key)
-     
      [Microsoft.PowerShell.PSConsoleReadLine]::Insert($key + ' {$_. }') # pelicas -> verbatim " -> faz expansao de vars
      [Microsoft.PowerShell.PSConsoleReadLine]::BackwardChar($null, 2)    
 }
@@ -25,7 +25,6 @@ Set-PSReadLineKeyHandler -Chord '%' -ScriptBlock { Invoke-Command $__quickblock 
 #se tiver letras antes adicionar apenas o char
 
 
-Import-Module "$($profile | split-path -Parent)\ConvertTo-NamedPath.ps1" # Import-Module > . (source operator) --> variables inside the script are only accessable by the functions inside it!
 
 Add-NamedPath "$HOME\Downloads" '⬇️'
 Add-NamedPath "$HOME\Documents" '📜'
