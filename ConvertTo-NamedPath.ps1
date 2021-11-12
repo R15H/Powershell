@@ -1,5 +1,7 @@
 ﻿$__namedPaths = @{
-     $HOME = '[~]'
+     $HOME = '[~]';
+     "$HOME\Downloads" = '⬇️';
+     "$HOME\Documents" = '📜'
 }
 function decorateAlias {
      param($alias)
