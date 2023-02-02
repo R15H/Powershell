@@ -1,5 +1,65 @@
 
+function mergeArrayString {
+    param(
+    [Parameter(Position=0)][System.Collections.ArrayList]$array, 
+    [parameter(Position=1)][int]$start, 
+    [parameter(Position=2)][int]$count
+    )
+    $i = 0
+    $newArray = [System.Collections.ArrayList]::new()
+    #iterate all strings
+    while ($i -lt $array.count) {
+        $newEntry = $null
+        if ($i -eq $start) {
+            $mergedString = ""
+            foreach($index in $start..$count){
+                $mergedString += " $($array[$index])"
+            }
+            $newEntry = $mergedString
+        }
 
+        $isWithinMerge = ($i -gt $start) -and ($i -lt $count+$start)
+        if($isWithinMerge){
+            continue;
+        } else {
+            $newEntry = $array[$i]
+        }
+
+
+        if($null -ne $newEntry) { $newArray.Add($newEntry) }
+        $i += 1
+    }
+    $newArray
+}
+
+
+function makeColumnNamesUnique() {
+    param([string]$CSVHeader)
+    $columnNames = $CSVHeader.split(',')
+    $repetitionCount = @{}
+    $newColumns = [System.Collections.ArrayList]::new($columnNames.Length)
+    foreach ($name in $columnNames) {
+        $c = 0
+        foreach ($col in $columnNames) {
+            if ($name -eq $col) {
+                $c += 1 
+            } 
+        }
+        $isRepeated = $c -gt 1
+        if ($isRepeated) {
+            $repetitionCount[$name] = [int]($repetitionCount[$name]) + 1
+            $thisRep = $repetitionCount[$name]
+
+            $newColumns.add("$name$thisRep") | Out-Null
+        }
+        else {
+            $newColumns.add($name)  | Out-Null
+        }
+    }
+
+    write-host $newColumns
+    $newColumns -join ','
+}
 
 function Convert-ExcelToCsvFile {
     [CmdletBinding()]
@@ -25,7 +85,7 @@ function Convert-ExcelToCsvFile {
 
 function  Convert-PDFToCsvFile {
     [CmdletBinding()]
-    param([parameter(Position = 0)][string]$Path, [parameter(Position = 1)][string]$DestinationFolder, [switch]$Internals) 
+    param([parameter(Position = 0, Mandatory = $true)][string]$Path, [parameter(Position = 1, Mandatory = $true)][string]$DestinationFolder, [switch]$Internals) 
     $Path = Resolve-Path $Path
     $DestinationFolder = $DestinationFolder ? (Resolve-Path $DestinationFolder) : (New-TemporaryFile)
     
@@ -41,9 +101,11 @@ function Convert-FileToCsv {
     param(
         [string]$Path, 
         [int]$First, [switch]$Supress,
-        [int]$TrimFirst, [int]$MergeEnd,$NameRow,  # name row = (rowNr,name),(rowNr,name)
-        [switch]$NoCache
+        [int]$TrimFirst, [int]$MergeEnd, $NameRow, # name row = (rowNr,name),(rowNr,name)
+        $ImportCsvArgs,
+        [switch]$NoCache, [char]$delimiter, [System.Collections.ArrayList]$HorizonalMerge
     )
+    $delimiter = $delimiter ?? ','
     $src = Resolve-Path $Path 
     $fileName = Split-Path $Path -LeafBase
     $tempPath = [System.io.Path]::GetTempPath()
@@ -85,6 +147,12 @@ function Convert-FileToCsv {
             #em que ela é criada!! 
             $finalContent = ($finalContent | Select-Object -skip $trimFirst)
         }
+        if ($First) {
+            # show first lines
+            $finalContent | Select-Object -First $First | write-host 
+            write-host "--            Before                      ---"
+        }
+        set-content $finalFile -Value $finalContent 
 
         # merges rows [starting from the index MergeStart to MergeEnd] and trims all rows before the merge 
         if ($MergeEnd) {
@@ -106,26 +174,44 @@ function Convert-FileToCsv {
             $content[$MergeEnd] = $mergedRow.trim() -join ',' #trim is important to access properties conveniently
             $finalContent = $content[$MergeEnd..$content.Length] 
         }
-        if ($First) {
-            $finalContent | Select-Object -First $First | write-host 
-        }
 
-        set-content $finalFile -Value $finalContent 
-        #set-content -Path $finalCSVFile -Value $finalCSVValue 
-        $csvObj = Import-CSV $finalFile -WarningAction SilentlyContinue
+        $finalContent[0] = makeColumnNamesUnique($finalContent[0]) 
 
-
-
-        # each row must be outputed one a the time for the command to work with the "pipeline arquitecture"
-        $csvObj | ForEach-Object { 
-            $row = $_
-            $row | Add-Member -NotePropertyName 'SheetName' -NotePropertyValue $file.SheetName # add-member does not return the object
-            if (-not $supress -and (-not $First)) {
-                $row
+        if ($HorizonalMerge) {
+            #vector of merge vectors  [ [1,3], [4,5]  ] -> merge 123 together and 45 
+            foreach ($merge in $HorizonalMerge) {
+                $i = 1 #start at 1 to skip the header
+                while ($i -lt $finalContent.Length) {
+                    $row = $finalContent[$i]
+                    $row = mergeArrayString($row.split($delimiter), $merge[0], $merge[1])
+                    $finalContent[$i] = $row -join $delimiter
+                    $i += 1
+                }
             }
         }
     }
+
+    if ($First) {
+        # show first lines
+        $finalContent | Select-Object -First $First | write-host 
+    }
+    set-content $finalFile -Value $finalContent 
+    #set-content -Path $finalCSVFile -Value $finalCSVValue 
+
+    $csvObj = Import-CSV $finalFile @ImportCsvArgs -WarningAction SilentlyContinue #https://stackoverflow.com/questions/363884/what-does-the-symbol-do-in-powershell
+
+
+
+    # each row must be outputed one a the time for the command to work with the "pipeline arquitecture"
+    $csvObj | ForEach-Object { 
+        $row = $_
+        $row | Add-Member -NotePropertyName 'SheetName' -NotePropertyValue $file.SheetName # add-member does not return the object
+        if (-not $supress -and (-not $First)) {
+            $row
+        }
+    }
 }
+
 
 #Convert-ExcelToCsvFile -Path '~/Downloads/Pauta - 2021 (8).xlsx' -DestinationFolder '.' 
 #Convert-FileToCsv '~/Downloads/Pauta - 2021 (8).xlsx' -OutVariable som -First 5 -TrimFirst 2 -Supress
